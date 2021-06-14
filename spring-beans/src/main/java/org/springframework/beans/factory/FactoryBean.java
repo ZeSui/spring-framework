@@ -91,6 +91,8 @@ public interface FactoryBean<T> {
 	 * @return an instance of the bean (can be {@code null})
 	 * @throws Exception in case of creation errors
 	 * @see FactoryBeanNotInitializedException
+	 *
+	 * 返回创建的bean实例，如果isSingleton返回true，将实例放入Srping的单例缓存池中
 	 */
 	@Nullable
 	T getObject() throws Exception;
@@ -113,6 +115,8 @@ public interface FactoryBean<T> {
 	 * @return the type of object that this FactoryBean creates,
 	 * or {@code null} if not known at the time of the call
 	 * @see ListableBeanFactory#getBeansOfType
+	 *
+	 * 返回创建的Bean类型
 	 */
 	@Nullable
 	Class<?> getObjectType();
