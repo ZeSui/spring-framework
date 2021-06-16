@@ -931,6 +931,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
+				/**
+				 * 注册前的最后一次校验
+				 * 主要针对 AbstractBeanDefinition  中的methodOverrides
+				 * 校验methodOverrides 是否与工厂方法并存或者 methodOverrides对应的方法不存在
+				 * AbstractBeanDefinition 自校验
+				 */
 				((AbstractBeanDefinition) beanDefinition).validate();
 			}
 			catch (BeanDefinitionValidationException ex) {
@@ -939,11 +945,15 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
+		// beanDefinitionMap是全局变量，检查是否已经被注册了
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+		// 如果bean已经存在
 		if (existingDefinition != null) {
+			// 不允许覆盖就抛异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			}
+			// 角色判断
 			else if (existingDefinition.getRole() < beanDefinition.getRole()) {
 				// e.g. was ROLE_APPLICATION, now overriding with ROLE_SUPPORT or ROLE_INFRASTRUCTURE
 				if (logger.isInfoEnabled()) {
@@ -966,11 +976,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			// 将当前bean放进map，除了不允许覆盖的情况，其他都会走到这里
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
+			// 是不是第一次开始新增
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
+				// 全局变量,锁住
 				synchronized (this.beanDefinitionMap) {
 					this.beanDefinitionMap.put(beanName, beanDefinition);
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
@@ -980,6 +993,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					removeManualSingletonName(beanName);
 				}
 			}
+			// 轻车熟路了
 			else {
 				// Still in startup registration phase
 				this.beanDefinitionMap.put(beanName, beanDefinition);
@@ -989,9 +1003,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			this.frozenBeanDefinitionNames = null;
 		}
 
+		// 充值所有beanName对应的缓存
 		if (existingDefinition != null || containsSingleton(beanName)) {
 			resetBeanDefinition(beanName);
 		}
+		// 如果冻结，清除有关按类型映射的任何假设
 		else if (isConfigurationFrozen()) {
 			clearByTypeCache();
 		}
@@ -1039,11 +1055,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 */
 	protected void resetBeanDefinition(String beanName) {
 		// Remove the merged bean definition for the given bean, if already created.
+		// 合并以及清除bean
 		clearMergedBeanDefinition(beanName);
 
 		// Remove corresponding bean from singleton cache, if any. Shouldn't usually
 		// be necessary, rather just meant for overriding a context's default beans
 		// (e.g. the default StaticMessageSource in a StaticApplicationContext).
+		// 在单例缓存中删除
 		destroySingleton(beanName);
 
 		// Notify all post-processors that the specified bean definition has been reset.
@@ -1054,6 +1072,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		// Reset all bean definitions that have the given bean as parent (recursively).
+		// 查找当前bean是否是某些bean的父类，有的话则重置
 		for (String bdName : this.beanDefinitionNames) {
 			if (!beanName.equals(bdName)) {
 				BeanDefinition bd = this.beanDefinitionMap.get(bdName);
