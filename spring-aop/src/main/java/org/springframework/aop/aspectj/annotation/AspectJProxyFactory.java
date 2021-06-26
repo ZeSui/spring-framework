@@ -118,9 +118,11 @@ public class AspectJProxyFactory extends ProxyCreatorSupport {
 	 * @see AspectJProxyUtils#makeAdvisorChainAspectJCapableIfNecessary(List)
 	 */
 	private void addAdvisorsFromAspectInstanceFactory(MetadataAwareAspectInstanceFactory instanceFactory) {
+		// 添加所有增强器
 		List<Advisor> advisors = this.aspectFactory.getAdvisors(instanceFactory);
 		Class<?> targetClass = getTargetClass();
 		Assert.state(targetClass != null, "Unresolvable target class");
+		// 寻找合适的增强器，候选增强器中可能存在不适合的
 		advisors = AopUtils.findAdvisorsThatCanApply(advisors, targetClass);
 		AspectJProxyUtils.makeAdvisorChainAspectJCapableIfNecessary(advisors);
 		AnnotationAwareOrderComparator.sort(advisors);

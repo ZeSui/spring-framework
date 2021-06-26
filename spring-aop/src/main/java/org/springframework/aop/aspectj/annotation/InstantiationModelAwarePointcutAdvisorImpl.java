@@ -94,6 +94,7 @@ final class InstantiationModelAwarePointcutAdvisorImpl
 		this.declarationOrder = declarationOrder;
 		this.aspectName = aspectName;
 
+		// 如果是延迟加载
 		if (aspectInstanceFactory.getAspectMetadata().isLazilyInstantiated()) {
 			// Static part of the pointcut is a lazy type.
 			Pointcut preInstantiationPointcut = Pointcuts.union(
@@ -145,6 +146,7 @@ final class InstantiationModelAwarePointcutAdvisorImpl
 		return this.instantiatedAdvice;
 	}
 
+	// 返回不同增强注解的信息增强器
 	private Advice instantiateAdvice(AspectJExpressionPointcut pointcut) {
 		Advice advice = this.aspectJAdvisorFactory.getAdvice(this.aspectJAdviceMethod, pointcut,
 				this.aspectInstanceFactory, this.declarationOrder, this.aspectName);

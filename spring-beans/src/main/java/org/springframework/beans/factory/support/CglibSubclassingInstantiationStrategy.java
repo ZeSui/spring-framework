@@ -81,6 +81,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			@Nullable Constructor<?> ctor, Object... args) {
 
 		// Must generate CGLIB subclass...
+		// 该类的内部类 CglibSubclassCreator
 		return new CglibSubclassCreator(bd, owner).instantiate(ctor, args);
 	}
 
@@ -88,6 +89,8 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 	/**
 	 * An inner class created for historical reasons to avoid external CGLIB dependency
 	 * in Spring versions earlier than 3.2.
+	 *
+	 * 出于历史原因创建的内部类，以避免外部 CGLIB 依赖
 	 */
 	private static class CglibSubclassCreator {
 

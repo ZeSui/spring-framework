@@ -59,6 +59,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 
 	private static final String AJC_MAGIC = "ajc$";
 
+	// aspectJ的注解类
 	private static final Class<?>[] ASPECTJ_ANNOTATION_CLASSES = new Class<?>[] {
 			Pointcut.class, Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class};
 
@@ -141,6 +142,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 
 	@Nullable
 	private static <A extends Annotation> AspectJAnnotation<A> findAnnotation(Method method, Class<A> toLookFor) {
+		// 获取制定方法上的注解，用 AspectJAnnotation 封装
 		A result = AnnotationUtils.findAnnotation(method, toLookFor);
 		if (result != null) {
 			return new AspectJAnnotation<>(result);
