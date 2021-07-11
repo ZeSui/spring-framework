@@ -263,6 +263,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 				this.targetSourcedBeans.add(beanName);
 			}
 			Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource);
+			// 找到所有对应bean的增强之后，开始创建代理
 			Object proxy = createProxy(beanClass, beanName, specificInterceptors, targetSource);
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
@@ -452,6 +453,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		// 检查proxyTargetClass设置以及preserverTargetClass
 		if (!proxyFactory.isProxyTargetClass()) {
+			// 确定是否应使用给定的bean替代其目标类而不是其接口
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
 			}
@@ -515,12 +517,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	protected Advisor[] buildAdvisors(@Nullable String beanName, @Nullable Object[] specificInterceptors) {
 		// Handle prototypes correctly...
-		// 解析注册的所有InterceptorName
+		// 解析注册所有的interceptiorName，公共的增强器
 		Advisor[] commonInterceptors = resolveInterceptorNames();
 
 		List<Object> allInterceptors = new ArrayList<>();
 		if (specificInterceptors != null) {
-			// 加入拦截器
 			allInterceptors.addAll(Arrays.asList(specificInterceptors));
 			if (commonInterceptors.length > 0) {
 				if (this.applyCommonInterceptorsFirst) {

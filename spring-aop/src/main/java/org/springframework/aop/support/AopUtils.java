@@ -315,6 +315,7 @@ public abstract class AopUtils {
 			}
 		}
 		boolean hasIntroductions = !eligibleAdvisors.isEmpty();
+		// 在处理普通增强
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor) {
 				// already processed

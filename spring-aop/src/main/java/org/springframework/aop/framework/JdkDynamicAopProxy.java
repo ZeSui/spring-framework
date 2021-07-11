@@ -167,7 +167,6 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 				// The target does not implement the equals(Object) method itself.
 				return equals(args[0]);
 			}
-			// hash方法处理
 			else if (!this.hashCodeDefined && AopUtils.isHashCodeMethod(method)) {
 				// The target does not implement the hashCode() method itself.
 				return hashCode();
@@ -185,7 +184,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 			Object retVal;
 
-			// 如果允许代理内部调用
+			// 目标对象内部的自我调用无法实时切面中的增强则需要通过此属性暴露代理
 			if (this.advised.exposeProxy) {
 				// Make invocation available if necessary.
 				oldProxy = AopContext.setCurrentProxy(proxy);
